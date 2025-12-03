@@ -804,21 +804,29 @@ async function confirmBanUser() {
 
 function confirmDeleteUser(userId, username) {
     pendingAction = async () => {
+        console.log('🗑️ Attempting to delete user:', userId);
         try {
+            // Correct endpoint: /users/{userId} (NOT /admin/users/{userId})
+            console.log('📡 DELETE request to:', `/users/${userId}`);
             const result = await apiCall(`/users/${userId}`, {
                 method: 'DELETE'
             });
 
-            if (result.success) {
-                showToast('User deleted successfully', 'success');
+            console.log('📊 Delete response:', result);
+            console.log('📊 Response status:', result.status);
+
+            if (result.success || result.status === 204 || result.status === 200) {
+                showToast('✅ User deleted successfully', 'success');
                 closeModal('confirmModal');
                 loadUsers();
             } else {
-                showToast('Failed to delete user', 'error');
+                console.error('❌ Delete failed:', result);
+                const errorMsg = result.data?.message || result.error || result.data?.error || 'Failed to delete user';
+                showToast(`❌ Failed to delete user: ${errorMsg}`, 'error');
             }
         } catch (error) {
-            console.error('Error deleting user:', error);
-            showToast('Error deleting user', 'error');
+            console.error('❌ Error deleting user:', error);
+            showToast('❌ Error deleting user: ' + error.message, 'error');
         }
     };
 
@@ -1014,21 +1022,27 @@ function filterSongs() {
 
 function confirmDeleteSong(songId, title) {
     pendingAction = async () => {
+        console.log('🗑️ Attempting to delete song:', songId);
         try {
-            const result = await apiCall(`/admin/content/songs/${songId}`, {
+            // Correct endpoint: /songs/{songId} (NOT /admin/content/songs/{songId})
+            console.log('📡 DELETE request to:', `/songs/${songId}`);
+            const result = await apiCall(`/songs/${songId}`, {
                 method: 'DELETE'
             });
 
-            if (result.success) {
-                showToast('Song deleted successfully', 'success');
+            console.log('📊 Delete response:', result);
+
+            if (result.success || result.status === 204 || result.status === 200) {
+                showToast('✅ Song deleted successfully', 'success');
                 closeModal('confirmModal');
                 loadSongs();
             } else {
-                showToast('Failed to delete song', 'error');
+                const errorMsg = result.data?.message || result.error || 'Failed to delete song';
+                showToast(`❌ Failed to delete song: ${errorMsg}`, 'error');
             }
         } catch (error) {
-            console.error('Error deleting song:', error);
-            showToast('Error deleting song', 'error');
+            console.error('❌ Error deleting song:', error);
+            showToast('❌ Error deleting song: ' + error.message, 'error');
         }
     };
 
@@ -1182,21 +1196,27 @@ async function viewPlaylist(playlistId) {
 
 function confirmDeletePlaylist(playlistId, name) {
     pendingAction = async () => {
+        console.log('🗑️ Attempting to delete playlist:', playlistId);
         try {
-            const result = await apiCall(`/admin/content/playlists/${playlistId}`, {
+            // Correct endpoint: /playlists/{playlistId} (NOT /admin/content/playlists/{playlistId})
+            console.log('📡 DELETE request to:', `/playlists/${playlistId}`);
+            const result = await apiCall(`/playlists/${playlistId}`, {
                 method: 'DELETE'
             });
 
-            if (result.success) {
-                showToast('Playlist deleted successfully', 'success');
+            console.log('📊 Delete response:', result);
+
+            if (result.success || result.status === 204 || result.status === 200) {
+                showToast('✅ Playlist deleted successfully', 'success');
                 closeModal('confirmModal');
                 loadPlaylists();
             } else {
-                showToast('Failed to delete playlist', 'error');
+                const errorMsg = result.data?.message || result.error || 'Failed to delete playlist';
+                showToast(`❌ Failed to delete playlist: ${errorMsg}`, 'error');
             }
         } catch (error) {
-            console.error('Error deleting playlist:', error);
-            showToast('Error deleting playlist', 'error');
+            console.error('❌ Error deleting playlist:', error);
+            showToast('❌ Error deleting playlist: ' + error.message, 'error');
         }
     };
 
