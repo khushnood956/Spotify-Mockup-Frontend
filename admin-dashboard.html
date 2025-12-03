@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Spotify Mock</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2>🎵 Spotify Admin</h2>
+                <p>Control Panel</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link active" data-page="dashboard">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </a>
+                <a href="#" class="nav-link" data-page="users">
+                    <i class="fas fa-users"></i> Users
+                </a>
+                <a href="#" class="nav-link" data-page="songs">
+                    <i class="fas fa-music"></i> Songs
+                </a>
+                <a href="#" class="nav-link" data-page="playlists">
+                    <i class="fas fa-list"></i> Playlists
+                </a>
+                <a href="#" class="nav-link" data-page="artists">
+                    <i class="fas fa-compact-disc"></i> Artists
+                </a>
+                <a href="#" class="nav-link" data-page="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="#" class="nav-link" data-page="logs">
+                    <i class="fas fa-list-alt"></i> Logs
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="handleLogout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="admin-main">
+            <!-- HEADER -->
+            <header class="admin-header">
+                <h1 id="pageTitle">Dashboard</h1>
+                <div class="admin-user-info">
+                    <span id="adminUsername">Welcome, Admin</span>
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </header>
+
+            <!-- CONTENT -->
+            <div class="admin-content">
+                <!-- DASHBOARD PAGE -->
+                <div id="dashboard-page" class="page-content active" style="display: block;">
+                    <h2 class="page-title">Dashboard Overview</h2>
+                    <p class="page-subtitle">Real-time platform statistics and analytics</p>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Users</div>
+                            <div class="stat-value" id="stat-users">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Songs</div>
+                            <div class="stat-value" id="stat-songs">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Artists</div>
+                            <div class="stat-value" id="stat-artists">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Albums</div>
+                            <div class="stat-value" id="stat-albums">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Playlists</div>
+                            <div class="stat-value" id="stat-playlists">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <h3>📊 Genre Distribution</h3>
+                            <div class="chart-canvas" id="genreChartContainer">
+                                <canvas id="genreChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <h3>🎤 Top 5 Artists by Plays</h3>
+                            <div class="chart-canvas" id="artistChartContainer">
+                                <canvas id="artistChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Insights -->
+                    <div class="insights-section">
+                        <h3>📈 Platform Insights</h3>
+                        <div class="insight-item">
+                            <span>Avg Songs per Playlist</span>
+                            <span class="insight-value" id="insight-avg-songs">-</span>
+                        </div>
+                        <div class="insight-item">
+                            <span>Total Genres</span>
+                            <span class="insight-value" id="insight-genres">-</span>
+                        </div>
+                        <div class="insight-item">
+                            <span>Total Plays</span>
+                            <span class="insight-value" id="insight-plays">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- USERS PAGE -->
+                <div id="users-page" class="page-content" style="display: none;">
+                    <h2 class="page-title">User Management</h2>
+                    <p class="page-subtitle">Manage platform users and their roles</p>
+
+                    <div class="search-filter-bar">
+                        <div class="search-box">
+                            <input type="text" id="userSearch" placeholder="🔍 Search users by name or email...">
+                        </div>
+                        <select id="roleFilter" class="filter-select">
+                            <option value="">All Roles</option>
+                            <option value="USER">User</option>
+                            <option value="ADMIN">Admin</option>
+                            <option value="MODERATOR">Moderator</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="loadUsers()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Join Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr><td colspan="6" class="text-center text-muted">Select Users tab to load data</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination" id="usersPagination"></div>
+                </div>
+
+                <!-- SONGS PAGE -->
+                <div id="songs-page" class="page-content" style="display: none;">
+                    <h2 class="page-title">Song Management</h2>
+                    <p class="page-subtitle">Manage all songs in the platform</p>
+
+                    <div class="search-filter-bar">
+                        <div class="search-box">
+                            <input type="text" id="songSearch" placeholder="🔍 Search songs by title...">
+                        </div>
+                        <select id="genreFilter" class="filter-select">
+                            <option value="">All Genres</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="loadSongs()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table" id="songsTable">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Artist</th>
+                                    <th>Genre</th>
+                                    <th>Duration</th>
+                                    <th>Plays</th>
+                                    <th>Uploaded</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="songsTableBody">
+                                <tr><td colspan="7" class="text-center text-muted">Select Songs tab to load data</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination" id="songsPagination"></div>
+                </div>
+
+                <!-- PLAYLISTS PAGE -->
+                <div id="playlists-page" class="page-content" style="display: none;">
+                    <h2 class="page-title">Playlist Management</h2>
+                    <p class="page-subtitle">Manage all user playlists</p>
+
+                    <div class="search-filter-bar">
+                        <div class="search-box">
+                            <input type="text" id="playlistSearch" placeholder="🔍 Search playlists...">
+                        </div>
+                        <button class="btn btn-primary" onclick="loadPlaylists()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table" id="playlistsTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Creator</th>
+                                    <th>Songs</th>
+                                    <th>Created</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="playlistsTableBody">
+                                <tr><td colspan="6" class="text-center text-muted">Select Playlists tab to load data</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination" id="playlistsPagination"></div>
+                </div>
+
+                <!-- ARTISTS PAGE -->
+                <div id="artists-page" class="page-content" style="display: none;">
+                    <h2 class="page-title">Artist Management</h2>
+                    <p class="page-subtitle">View all platform artists</p>
+
+                    <div class="search-filter-bar">
+                        <div class="search-box">
+                            <input type="text" id="artistSearch" placeholder="🔍 Search artists...">
+                        </div>
+                        <button class="btn btn-primary" onclick="loadArtists()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table" id="artistsTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Genre</th>
+                                    <th>Songs</th>
+                                    <th>Total Plays</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="artistsTableBody">
+                                <tr><td colspan="5" class="text-center text-muted">Select Artists tab to load data</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination" id="artistsPagination"></div>
+                </div>
+
+                <!-- SETTINGS PAGE -->
+                <div id="settings-page" class="page-content" style="display: none;">
+                    <h2 class="page-title">System Settings</h2>
+                    <p class="page-subtitle">Manage platform configuration</p>
+
+                    <div class="settings-grid" id="settingsGrid">
+                        <div class="settings-card">
+                            <h3>🔐 Platform Settings</h3>
+                            <div class="setting-item">
+                                <span class="setting-label">Allow User Registration</span>
+                                <div class="toggle-switch" id="toggleRegistration" onclick="toggleSetting('registration')"></div>
+                            </div>
+                            <div class="setting-item">
+                                <span class="setting-label">Maintenance Mode</span>
+                                <div class="toggle-switch" id="toggleMaintenance" onclick="toggleSetting('maintenance')"></div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3>📊 Limits & Configuration</h3>
+                            <div class="form-group">
+                                <label>Max Playlists Per User</label>
+                                <input type="number" id="maxPlaylists" min="1" max="1000" value="50">
+                            </div>
+                            <div class="form-group">
+                                <label>Max Songs Per Playlist</label>
+                                <input type="number" id="maxSongsPlaylist" min="1" max="10000" value="500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary mt-20" onclick="saveSettings()">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </div>
+
+                <!-- LOGS PAGE -->
+                <div id="logs-page" class="page-content" style="display: none;">
+                    <h2 class="page-title">Admin Logs</h2>
+                    <p class="page-subtitle">Track all admin actions</p>
+
+                    <div class="search-filter-bar">
+                        <select id="actionFilter" class="filter-select" style="flex: 0 0 200px;">
+                            <option value="">All Actions</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="loadLogs()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table" id="logsTable">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Admin</th>
+                                    <th>Action</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsTableBody">
+                                <tr><td colspan="4" class="text-center text-muted">Select Logs tab to load data</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination" id="logsPagination"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Edit User Modal -->
+    <div class="modal-overlay" id="editUserModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Edit User</h2>
+                <button class="modal-close" onclick="closeModal('editUserModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="editUsername" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="editEmail">
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="editRole">
+                        <option value="USER">User</option>
+                        <option value="ADMIN">Admin</option>
+                        <option value="MODERATOR">Moderator</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editUserModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveUserEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ban User Modal -->
+    <div class="modal-overlay" id="banUserModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Ban User</h2>
+                <button class="modal-close" onclick="closeModal('banUserModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="banUserId">
+                <div class="form-group">
+                    <label>Ban Reason</label>
+                    <textarea id="banReason" rows="4" placeholder="Enter reason for banning..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('banUserModal')">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmBanUser()">Ban User</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Confirm Action</h2>
+                <button class="modal-close" onclick="closeModal('confirmModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('confirmModal')">Cancel</button>
+                <button class="btn btn-danger" id="confirmBtn" onclick="confirmAction()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

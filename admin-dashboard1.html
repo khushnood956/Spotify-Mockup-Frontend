@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Spotify Mock</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin-dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for proper charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, rgba(29, 185, 84, 0.2), rgba(18, 18, 18, 0.6));
+            border-bottom: 3px solid #1db954;
+            padding: 2rem 0;
+            box-shadow: 0 8px 32px rgba(29, 185, 84, 0.15);
+            margin-bottom: 2rem;
+        }
+        
+        header h1 {
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
+        #userWelcome {
+            color: #1db954;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        #logoutBtn {
+            background: linear-gradient(135deg, #1db954, #1ed760) !important;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+        }
+        
+        #logoutBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(29, 185, 84, 0.5);
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(52, 152, 219, 0.05));
+            padding: 2.5rem;
+            border-radius: 16px;
+            margin-bottom: 3rem;
+            border: 2px solid rgba(29, 185, 84, 0.2);
+            box-shadow: 0 8px 32px rgba(29, 185, 84, 0.1);
+        }
+        
+        .dashboard-header h2 {
+            color: #1db954;
+            margin-top: 0;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+        
+        .dashboard-header p {
+            color: #b3b3b3;
+            margin-bottom: 0;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem;">
+                <div>
+                    <h1>🎵 Spotify Admin</h1>
+                    <p style="color: #888; margin-top: 0.5rem; font-size: 0.9rem;">Platform Management Dashboard</p>
+                </div>
+                <nav>
+                    <span id="userWelcome">👤 Welcome, Admin!</span>
+                    <button id="logoutBtn" class="btn">🚪 Logout</button>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <div class="dashboard-header">
+                <h2>📊 Dashboard</h2>
+                <p>Manage users, content, and system settings in one place</p>
+            </div>
+
+            <!-- Admin Navigation Tabs -->
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 3rem; background: linear-gradient(135deg, rgba(29, 185, 84, 0.05), rgba(52, 152, 219, 0.05)); padding: 15px; border-radius: 12px; border: 1px solid rgba(29, 185, 84, 0.1);">
+                <button class="tab-button active" onclick="openTab('stats')" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 28px rgba(29, 185, 84, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(29, 185, 84, 0.35)'" style="padding: 14px 28px; border: none; background: linear-gradient(135deg, #1db954, #1ed760); cursor: pointer; color: white; border-radius: 8px; font-size: 15px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(29, 185, 84, 0.35);">📊 Statistics</button>
+                <button class="tab-button" onclick="openTab('users')" onmouseover="this.style.background='rgba(29, 185, 84, 0.1)'; this.style.color='#1db954';" onmouseout="this.style.background='transparent'; this.style.color='#b3b3b3';" style="padding: 14px 28px; border: none; background: transparent; cursor: pointer; color: #b3b3b3; border-radius: 8px; font-size: 15px; font-weight: 600; transition: all 0.3s ease;">👥 Users</button>
+                <button class="tab-button" onclick="openTab('content')" onmouseover="this.style.background='rgba(29, 185, 84, 0.1)'; this.style.color='#1db954';" onmouseout="this.style.background='transparent'; this.style.color='#b3b3b3';" style="padding: 14px 28px; border: none; background: transparent; cursor: pointer; color: #b3b3b3; border-radius: 8px; font-size: 15px; font-weight: 600; transition: all 0.3s ease;">🎵 Content</button>
+                <button class="tab-button" onclick="openTab('system')" onmouseover="this.style.background='rgba(29, 185, 84, 0.1)'; this.style.color='#1db954';" onmouseout="this.style.background='transparent'; this.style.color='#b3b3b3';" style="padding: 14px 28px; border: none; background: transparent; cursor: pointer; color: #b3b3b3; border-radius: 8px; font-size: 15px; font-weight: 600; transition: all 0.3s ease;">⚙️ Settings</button>
+            </div>
+
+            <!-- Statistics Tab -->
+            <div id="stats" class="tab-content active">
+                <h3 style="color: #1db954; font-size: 1.8rem; margin-bottom: 2rem; margin-top: 0;">📊 Platform Statistics</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                    <div style="background: linear-gradient(135deg, rgba(29, 185, 84, 0.12), rgba(29, 185, 84, 0.04)); padding: 2rem; border-radius: 12px; text-align: center; border: 2px solid rgba(29, 185, 84, 0.25); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); transition: all 0.3s ease;">
+                        <h4 style="margin-bottom: 1rem; font-size: 12px; opacity: 0.7; color: #b3b3b3; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-top: 0;">Total Users</h4>
+                        <p style="font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #1db954, #1ed760); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 0;" id="totalUsers">0</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(29, 185, 84, 0.12), rgba(29, 185, 84, 0.04)); padding: 2rem; border-radius: 12px; text-align: center; border: 2px solid rgba(29, 185, 84, 0.25); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); transition: all 0.3s ease;">
+                        <h4 style="margin-bottom: 1rem; font-size: 12px; opacity: 0.7; color: #b3b3b3; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-top: 0;">Total Songs</h4>
+                        <p style="font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #1db954, #1ed760); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 0;" id="totalSongs">0</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(29, 185, 84, 0.12), rgba(29, 185, 84, 0.04)); padding: 2rem; border-radius: 12px; text-align: center; border: 2px solid rgba(29, 185, 84, 0.25); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); transition: all 0.3s ease;">
+                        <h4 style="margin-bottom: 1rem; font-size: 12px; opacity: 0.7; color: #b3b3b3; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-top: 0;">Total Artists</h4>
+                        <p style="font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #1db954, #1ed760); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 0;" id="totalArtists">0</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(29, 185, 84, 0.12), rgba(29, 185, 84, 0.04)); padding: 2rem; border-radius: 12px; text-align: center; border: 2px solid rgba(29, 185, 84, 0.25); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); transition: all 0.3s ease;">
+                        <h4 style="margin-bottom: 1rem; font-size: 12px; opacity: 0.7; color: #b3b3b3; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-top: 0;">Total Albums</h4>
+                        <p style="font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #1db954, #1ed760); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 0;" id="totalAlbums">0</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(29, 185, 84, 0.12), rgba(29, 185, 84, 0.04)); padding: 2rem; border-radius: 12px; text-align: center; border: 2px solid rgba(29, 185, 84, 0.25); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); transition: all 0.3s ease;">
+                        <h4 style="margin-bottom: 1rem; font-size: 12px; opacity: 0.7; color: #b3b3b3; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-top: 0;">Total Playlists</h4>
+                        <p style="font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #1db954, #1ed760); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 0;" id="totalPlaylists">0</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(29, 185, 84, 0.12), rgba(29, 185, 84, 0.04)); padding: 2rem; border-radius: 12px; text-align: center; border: 2px solid rgba(29, 185, 84, 0.25); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); transition: all 0.3s ease;">
+                        <h4 style="margin-bottom: 1rem; font-size: 12px; opacity: 0.7; color: #b3b3b3; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-top: 0;">Active Today</h4>
+                        <p style="font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #1db954, #1ed760); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 0;" id="activeUsers">0</p>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;">
+                    <div style="background: linear-gradient(135deg, rgba(29, 185, 84, 0.08), rgba(52, 152, 219, 0.04)); padding: 2rem; border-radius: 12px; border: 2px solid rgba(29, 185, 84, 0.15); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+                        <h4 style="margin-top: 0; color: #1db954; margin-bottom: 1.5rem; font-size: 16px; font-weight: 700;">🎵 Genre Distribution (Pie Chart)</h4>
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="genrePieChart"></canvas>
+                        </div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(29, 185, 84, 0.08), rgba(52, 152, 219, 0.04)); padding: 2rem; border-radius: 12px; border: 2px solid rgba(29, 185, 84, 0.15); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+                        <h4 style="margin-top: 0; color: #1db954; margin-bottom: 1.5rem; font-size: 16px; font-weight: 700;">🎤 Top Artists (Bar Chart)</h4>
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="artistBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management Tab -->
+            <div id="users" class="tab-content">
+                <div class="section-header">
+                    <h3>User Management</h3>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="showCreateUserModal()">➕ Add User</button>
+                        <button class="btn btn-secondary" onclick="loadUsers()">🔄 Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="search-bar">
+                    <input type="text" id="userSearch" placeholder="🔍 Search users..." onkeyup="filterUsers()">
+                </div>
+
+                <div class="users-table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Join Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Content Management Tab -->
+            <div id="content" class="tab-content">
+                <div class="section-header">
+                    <h3>Content Management</h3>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="showAddSongModal()">➕ Add Song</button>
+                        <button class="btn btn-secondary" onclick="loadAllContent()">🔄 Refresh</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin: 2rem 0; background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 10px; border: 1px solid rgba(29, 185, 84, 0.1);">
+                    <button class="content-tab active" onclick="openContentTab('songs')" style="padding: 12px 24px; border: none; background: linear-gradient(135deg, #1db954, #1ed760); cursor: pointer; color: white; border-radius: 8px; font-size: 14px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);">🎵 Songs</button>
+                    <button class="content-tab" onclick="openContentTab('playlists')" style="padding: 12px 24px; border: none; background: transparent; cursor: pointer; color: #b3b3b3; border-radius: 8px; font-size: 14px; font-weight: 600; transition: all 0.3s ease;">📚 Playlists</button>
+                    <button class="content-tab" onclick="openContentTab('artists')" style="padding: 12px 24px; border: none; background: transparent; cursor: pointer; color: #b3b3b3; border-radius: 8px; font-size: 14px; font-weight: 600; transition: all 0.3s ease;">🎤 Artists</button>
+                </div>
+
+                <div id="songs-content" class="content-tab-panel active">
+                    <h4>All Songs</h4>
+                    <div id="adminSongsList" class="songs-grid">
+                        <!-- Admin songs view -->
+                    </div>
+                </div>
+
+                <div id="playlists-content" class="content-tab-panel">
+                    <h4>All Playlists</h4>
+                    <div id="adminPlaylistsList" class="playlists-grid">
+                        <!-- Admin playlists view -->
+                    </div>
+                </div>
+
+                <div id="artists-content" class="content-tab-panel">
+                    <h4>All Artists</h4>
+                    <div id="adminArtistsList" class="artists-grid">
+                        <!-- Admin artists view -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Settings Tab -->
+            <div id="system" class="tab-content">
+                <div style="background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(52, 152, 219, 0.05)); padding: 2.5rem; border-radius: 16px; border: 2px solid rgba(29, 185, 84, 0.2);">
+                    <h3 style="color: #1db954; margin-top: 0; font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">⚙️ System Settings</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;">
+                        <!-- Platform Settings Card -->
+                        <div style="background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(0, 0, 0, 0.4)); padding: 2rem; border-radius: 12px; border: 2px solid rgba(29, 185, 84, 0.15);">
+                            <h4 style="color: #1db954; margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 700;">🔧 Platform Settings</h4>
+                            
+                            <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                                <label style="color: #ffffff; font-weight: 600; margin: 0;">Allow User Registration</label>
+                                <input type="checkbox" id="allowRegistration" checked style="width: 24px; height: 24px; cursor: pointer; accent-color: #1db954;">
+                            </div>
+                            
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="color: #ffffff; font-weight: 600; display: block; margin-bottom: 0.5rem;">Maximum Playlists per User</label>
+                                <input type="number" id="maxPlaylists" value="50" min="1" style="width: 100%; padding: 12px 16px; border: 2px solid rgba(29, 185, 84, 0.2); border-radius: 8px; background: rgba(0, 0, 0, 0.3); color: #ffffff; font-size: 14px;">
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="savePlatformSettings()" style="background: linear-gradient(135deg, #1db954, #1ed760) !important; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; transition: all 0.3s ease; width: 100%; box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);">💾 Save Settings</button>
+                        </div>
+                        
+                        <!-- Database Management Card -->
+                        <div style="background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(0, 0, 0, 0.4)); padding: 2rem; border-radius: 12px; border: 2px solid rgba(29, 185, 84, 0.15);">
+                            <h4 style="color: #1db954; margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 700;">💾 Database Management</h4>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <button class="btn btn-warning" onclick="backupDatabase()" style="background: rgba(243, 156, 18, 0.2); border: 2px solid rgba(243, 156, 18, 0.5); color: #f39c12; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">💾 Backup Database</button>
+                                <button class="btn btn-danger" onclick="clearCache()" style="background: rgba(231, 76, 60, 0.2); border: 2px solid rgba(231, 76, 60, 0.5); color: #e74c3c; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">🗑️ Clear Cache</button>
+                                <button class="btn btn-secondary" onclick="showSystemInfo()" style="background: rgba(52, 152, 219, 0.2); border: 2px solid rgba(52, 152, 219, 0.5); color: #3498db; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">ℹ️ System Info</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="createUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('createUserModal')">&times;</span>
+            <h3>Create New User</h3>
+            <form id="createUserForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="newUsername" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="newEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="newUserRole" required>
+                        <option value="USER">User</option>
+                        <option value="ADMIN">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Create User</button>
+            </form>
+        </div>
+    </div>
+
+<script src="js/utils.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/admin.js"></script>
+<script>
+// Bind logout button
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.onclick = function() {
+            console.log('Logout clicked');
+            localStorage.clear();
+            window.location.href = 'login.html';
+        };
+    }
+    
+    // Initialize content tabs - show songs by default
+    const songsPanel = document.getElementById('songs-content');
+    if (songsPanel) {
+        songsPanel.style.display = 'block';
+    }
+});
+</script>
+</body>
+</html>
