@@ -92,7 +92,7 @@ function setupEventListeners() {
     setupSearch('artistSearch', filterArtists);
 
     // Filter dropdowns
-    document.getElementById('roleFilter')?.addEventListener('change', () => loadUsers());
+    document.getElementById('roleFilter')?.addEventListener('change', () => filterUsers());
     document.getElementById('genreFilter')?.addEventListener('change', () => filterSongs());
 }
 
@@ -593,15 +593,30 @@ async function loadUsers() {
     tbody.innerHTML = '<tr><td colspan="6" class="text-center"><div class="loading-text"><div class="loading-spinner"></div> Loading users...</div></td></tr>';
     
     try {
-        const role = document.getElementById('roleFilter')?.value || '';
-        const search = document.getElementById('userSearch')?.value || '';
+        const roleFilter = document.getElementById('roleFilter')?.value?.trim() || '';
+        const search = document.getElementById('userSearch')?.value?.trim() || '';
+        
+        // Backend database uses lowercase roles ("admin", "user", "moderator")
+        const role = roleFilter.toLowerCase();
+
+        console.log('🔍 Filter values - Role:', JSON.stringify(role), 'Search:', JSON.stringify(search));
 
         const params = new URLSearchParams({
             page: currentUserPage - 1,
-            size: pageSize,
-            ...(role && { role }),
-            ...(search && { search })
+            size: pageSize
         });
+        
+        // Only add role if it's not empty
+        if (role && role !== '') {
+            params.append('role', role);
+            console.log('👥 Filtering by role:', role);
+        }
+        
+        // Only add search if it's not empty
+        if (search && search !== '') {
+            params.append('search', search);
+            console.log('🔍 Searching for:', search);
+        }
 
         const url = `/admin/users?${params}`;
         console.log('📍 Calling URL:', url);
@@ -609,10 +624,28 @@ async function loadUsers() {
         const result = await apiCall(url);
         console.log('📊 Users result:', result);
         
-        if (result.success) {
-            const usersArray = result.data.users || result.data.content || result.data || [];
-            const users = Array.isArray(usersArray) ? usersArray : [];
+        if (result.success && result.data) {
+            let users = [];
+            
+            // Handle different response formats - YOUR BACKEND USES { data: [] }
+            if (result.data.data && Array.isArray(result.data.data)) {
+                users = result.data.data;
+                console.log('✅ Using data[] format for users');
+            } else if (result.data.content && Array.isArray(result.data.content)) {
+                users = result.data.content;
+                console.log('✅ Using content[] format for users');
+            } else if (result.data.users && Array.isArray(result.data.users)) {
+                users = result.data.users;
+                console.log('✅ Using users[] format');
+            } else if (Array.isArray(result.data)) {
+                users = result.data;
+                console.log('✅ Using direct array format for users');
+            } else {
+                console.error('❌ Unexpected users response format:', result.data);
+                users = [];
+            }
             console.log('👥 Users loaded:', users.length);
+            console.log('👥 First user:', users[0]);
             displayUsers(users);
             
             // Setup pagination if available
@@ -643,15 +676,19 @@ function displayUsers(users) {
         return;
     }
 
-    tbody.innerHTML = users.map(user => `
+    tbody.innerHTML = users.map(user => {
+        // Database stores lowercase roles ("admin", "user"), normalize for display
+        const userRole = (user.role || 'user').toLowerCase();
+        const displayRole = userRole.toUpperCase();
+        return `
         <tr>
-            <td>${user.username}</td>
-            <td>${user.email}</td>
-            <td><span class="badge ${getBadgeClass(user.role)}">${user.role}</span></td>
-            <td>${new Date(user.joinDate || user.createdAt).toLocaleDateString()}</td>
-            <td><span class="badge ${user.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'}">${user.status || 'ACTIVE'}</span></td>
+            <td>${user.username || 'N/A'}</td>
+            <td>${user.email || 'N/A'}</td>
+            <td><span class="badge ${getBadgeClass(displayRole)}">${displayRole}</span></td>
+            <td>${user.joinDate || user.createdAt ? new Date(user.joinDate || user.createdAt).toLocaleDateString() : 'N/A'}</td>
+            <td><span class="badge ${(user.status || 'ACTIVE').toUpperCase() === 'ACTIVE' ? 'badge-success' : 'badge-danger'}">${(user.status || 'ACTIVE').toUpperCase()}</span></td>
             <td class="actions">
-                <button class="action-btn action-btn-edit" data-user-id="${user.id}" data-username="${user.username}" data-email="${user.email}" data-role="${user.role}">
+                <button class="action-btn action-btn-edit" data-user-id="${user.id}" data-username="${user.username}" data-email="${user.email}" data-role="${userRole}">
                     <i class="fas fa-edit"></i> Edit
                 </button>
                 <button class="action-btn action-btn-ban" data-user-id="${user.id}">
@@ -662,7 +699,8 @@ function displayUsers(users) {
                 </button>
             </td>
         </tr>
-    `).join('');
+        `;
+    }).join('');
     
     // Attach event listeners
     tbody.querySelectorAll('.action-btn-edit').forEach(btn => {
@@ -689,7 +727,7 @@ function displayUsers(users) {
 }
 
 function filterUsers() {
-    currentUserPage = 1;
+    currentUserPage = 1; // Reset to first page when filtering
     loadUsers();
 }
 

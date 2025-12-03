@@ -76,7 +76,9 @@ async function checkAuthStatus() {
             
             // Small delay to avoid immediate redirect
             setTimeout(() => {
-                if (user.role === 'admin' || user.role === 'ADMIN') {
+                // Database uses lowercase roles
+                const userRole = (user.role || 'user').toLowerCase();
+                if (userRole === 'admin') {
                     redirect('admin-dashboard.html');
                 } else {
                     redirect('user-dashboard.html');
@@ -116,11 +118,11 @@ if (loginForm) {
                 setToken(result.data.token);
                 showMessage('Login successful! Redirecting...', 'success');
                 
-                // Redirect based on user role
-                const userRole = result.data.role || 'USER';
+                // Redirect based on user role (database uses lowercase)
+                const userRole = (result.data.role || 'user').toLowerCase();
                 console.log('👤 User role:', userRole);
                 
-                if (userRole === 'ADMIN' || userRole === 'admin') {
+                if (userRole === 'admin') {
                     redirect('admin-dashboard.html', 1500);
                 } else {
                     redirect('user-dashboard.html', 1500);
@@ -209,7 +211,16 @@ if (registerForm) {
                 // Store the JWT token
                 setToken(result.data.token);
                 showMessage('Registration successful! Redirecting...', 'success');
-                redirect('user-dashboard.html', 1500);
+                
+                // Redirect based on user role (database uses lowercase)
+                const userRole = (result.data.role || userData.role || 'user').toLowerCase();
+                console.log('👤 Registered user role:', userRole);
+                
+                if (userRole === 'admin') {
+                    redirect('admin-dashboard.html', 1500);
+                } else {
+                    redirect('user-dashboard.html', 1500);
+                }
             } else {
                 console.log('❌ Registration failed');
                 showMessage(result.data?.error || result.error || 'Registration failed', 'error');
