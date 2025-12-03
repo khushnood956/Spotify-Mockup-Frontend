@@ -805,7 +805,7 @@ async function confirmBanUser() {
 function confirmDeleteUser(userId, username) {
     pendingAction = async () => {
         try {
-            const result = await apiCall(`/admin/users/${userId}`, {
+            const result = await apiCall(`/users/${userId}`, {
                 method: 'DELETE'
             });
 
